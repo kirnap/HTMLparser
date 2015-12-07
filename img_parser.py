@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from bs4 import NavigableString
 
 
 def open_html_document_in_beautifulsoup(input_doc):
@@ -10,24 +11,33 @@ def open_html_document_in_beautifulsoup(input_doc):
     return BeautifulSoup(open(input_doc), 'html5lib')
 
 
-def find_p_tags(document):
+def find_container_p_tags(document):
     """
-    Finds the p_tags in the document as a list
+    Finds the p_tags containing <img> in the document as a list
 
     """
-    return document.findAll('p')
+    ret = []
+
+    for p_tag in document.findAll('p'):
+        if has_img_tag(p_tag):
+            ret.append(p_tag)
+    return ret
 
 
-def insert_img_tag_after_p_tag(p_tag_list):
-    """
-    Takes p_tag list as an input and finds the img tags in each p tag in list and insert immediately after
-    the parent p tag in the document
-
-    """
-    for p_tag in p_tag_list:
-        for tag in p_tag.findChildren():
-            if tag.name == 'img':
-                p_tag.insert_after(tag)
+def beautify_content(doc, p_tag):
+    # TODO code does not work when both side of the img tag contains the text
+    p_tag_contents = p_tag.contents
+    while len(p_tag_contents) != 0:
+        item = p_tag_contents.pop(0)
+        if isinstance(item, NavigableString):
+            new_tag = doc.new_tag('p')
+            new_tag.string = item
+            current_tag.insert_after(new_tag)
+            current_tag = current_tag.next_sibling
+        else:
+            new_tag = item
+            current_tag.insert_after(new_tag)
+            current_tag = current_tag.next_sibling
 
 
 def find_img_tags(document):
@@ -59,14 +69,30 @@ def normalize_img_tags(img_list):
                     del img.attrs['height']
 
 
+def has_img_tag(tag):
+    ret = False
+    for child_tag in tag.findChildren():
+        if child_tag.name == 'img':
+            return True
+    return ret
+
+
+def get_p_tag_content(p_tag):
+    """
+    Return all the contents of p_tag as a list and destroy it.
+
+    """
+    pass
+
+
 if __name__ == '__main__':
     input_document = raw_input('Please enter full path of your html document: ')
     html_doc = open_html_document_in_beautifulsoup(input_document)
     img_tags = find_img_tags(html_doc)
     normalize_img_tags(img_tags)
+    for tag in find_container_p_tags(html_doc):
+        beautify_content(html_doc, tag)
 
-    # p_tags_in_html_doc = find_p_tags(html_doc)
-    # insert_img_tag_after_p_tag(p_tags_in_html_doc)
 
     result = open('result.html', 'w')
     result.write(html_doc.prettify())
