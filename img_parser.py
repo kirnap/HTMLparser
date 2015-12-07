@@ -1,3 +1,5 @@
+import copy
+
 from bs4 import BeautifulSoup
 from bs4 import NavigableString
 
@@ -25,19 +27,25 @@ def find_container_p_tags(document):
 
 
 def beautify_content(doc, p_tag):
-    # TODO code does not work when both side of the img tag contains the text
+    """
+    First insert all the elements after the current p_tags in order and then destroy the current tag
+    :param doc:
+    :param p_tag:
+    :return: None
+    """
     p_tag_contents = p_tag.contents
-    while len(p_tag_contents) != 0:
-        item = p_tag_contents.pop(0)
+    current = p_tag
+    for i in range(len(p_tag_contents)):
+        item = copy.copy(p_tag_contents[i])
         if isinstance(item, NavigableString):
-            new_tag = doc.new_tag('p')
-            new_tag.string = item
-            current_tag.insert_after(new_tag)
-            current_tag = current_tag.next_sibling
+            new_element = doc.new_tag('p')
+            new_element.string = item
+            current.insert_after(new_element)
+            current = current.next_sibling
         else:
-            new_tag = item
-            current_tag.insert_after(new_tag)
-            current_tag = current_tag.next_sibling
+            current.insert_after(item)
+            current = current.next_sibling
+    p_tag.decompose()
 
 
 def find_img_tags(document):
@@ -75,14 +83,6 @@ def has_img_tag(tag):
         if child_tag.name == 'img':
             return True
     return ret
-
-
-def get_p_tag_content(p_tag):
-    """
-    Return all the contents of p_tag as a list and destroy it.
-
-    """
-    pass
 
 
 if __name__ == '__main__':
