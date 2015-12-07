@@ -10,7 +10,7 @@ def read_from_string(input_string):
     :param input_string:
     :return:
     """
-    return bs.BeautifulSoup(input_string, 'html.parser')
+    return bs.BeautifulSoup(input_string, 'lxml')
 
 
 def open_html_document_in_beautifulsoup(input_doc):
@@ -106,7 +106,9 @@ if __name__ == '__main__':
 
 
     result = open('result.html', 'w')
-    result.write(html_doc.prettify())
+    for item in html_doc.body.findChildren():
+        result.write(str(item))
+
     result.close()
 
 
