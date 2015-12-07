@@ -1,6 +1,6 @@
 import copy
 
-from bs4 import BeautifulSoup
+import bs4 as bs
 from bs4 import NavigableString
 
 
@@ -10,7 +10,7 @@ def read_from_string(input_string):
     :param input_string:
     :return:
     """
-    return BeautifulSoup(input_string, 'html5lib')
+    return bs.BeautifulSoup(input_string, 'html.parser')
 
 
 def open_html_document_in_beautifulsoup(input_doc):
