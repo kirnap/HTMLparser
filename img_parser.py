@@ -4,8 +4,18 @@ from bs4 import BeautifulSoup
 from bs4 import NavigableString
 
 
+def read_from_string(input_string):
+    """
+    Creates BeutifulSoup object from a given string of html contents
+    :param input_string:
+    :return:
+    """
+    return BeautifulSoup(input_string, 'html5lib')
+
+
 def open_html_document_in_beautifulsoup(input_doc):
     """
+    This function is to use from HTML document
 
     :param input_doc:
     :return: BeautifulSoup instance
@@ -86,8 +96,9 @@ def has_img_tag(tag):
 
 
 if __name__ == '__main__':
-    input_document = raw_input('Please enter full path of your html document: ')
-    html_doc = open_html_document_in_beautifulsoup(input_document)
+    input_document = raw_input('Please enter html content as a string: ')
+    html_doc = read_from_string(input_document)
+    # html_doc = open_html_document_in_beautifulsoup(input_document)
     img_tags = find_img_tags(html_doc)
     normalize_img_tags(img_tags)
     for tag in find_container_p_tags(html_doc):
