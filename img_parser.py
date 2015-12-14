@@ -49,6 +49,7 @@ def create_new_p(doc, p_contents):
         new_p.append(p_contents[0])
     return new_p
 
+
 def parse_p(doc,p_tag, current=None):
     if len(p_tag.contents) == 0:
         p_tag.decompose()
@@ -75,7 +76,6 @@ def parse_p(doc,p_tag, current=None):
             parse_p(doc, p_tag, current=current)
 
 
-
 def get_img_index(p_tag):
     for i in range(len(p_tag.contents)):
         if p_tag.contents[i].name == 'img':
@@ -83,7 +83,11 @@ def get_img_index(p_tag):
     return None
 
 
-
+def delete_empty_ptag(p_tag):
+    if len(p_tag.contents) == 0:
+        p_tag.decompose()
+    if len(p_tag.contents) == 1 and p_tag.contents[0] == ' ':
+        p_tag.decompose()
 
 
 def find_img_tags(document):
@@ -131,6 +135,8 @@ if __name__ == '__main__':
     p = find_container_p_tags(doc)
     for tag in find_container_p_tags(doc):
         parse_p(doc,tag)
+    for p in doc.findAll('p'):
+        delete_empty_ptag(p)
     result = open('result.html', 'w')
 
     result.write(str(doc.body.findChildren()[0]))
@@ -138,8 +144,6 @@ if __name__ == '__main__':
     for item in doc.body.findChildren()[0].find_next_siblings():
         txt += (str(item))
     print txt
-
-
 
 
 
